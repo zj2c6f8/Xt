@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N I M A T T - Cyber WhatsApp Control</title>
+    <style>
+        body { background-color: #0b0c10; color: #66fcf1; font-family: monospace; padding: 20px; }
+        .card { border: 1px solid #45a29e; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        input, button { padding: 10px; margin: 5px; background: #1f2833; color: #fff; border: 1px solid #66fcf1; }
+        button { cursor: pointer; background: #45a29e; color: #000; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>N I M A T T - WhatsApp Pairing System</h2>
+        <input type="text" id="phone" placeholder="947xxxxxxxx">
+        <button onclick="requestPairing()">Request OTP / Connect</button>
+        <p id="status"></p>
+    </div>
+
+    <div class="card" id="dashboard" style="display:none;">
+        <h2>User Session Active</h2>
+        <button onclick="fetchMessages()">Get Incoming Messages</button>
+        <div id="messages"></div>
+    </div>
+
+    <script>
+        const SERVER_URL = 'http://localhost:3000';
+
+        async function requestPairing() {
+            const phone = document.getElementById('phone').value;
+            document.getElementById('status').innerText = 'Sending Pairing Code via +94743646051...';
+
+            const res = await fetch(`${SERVER_URL}/api/connect-user`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userPhone: phone })
+            });
+
+            const data = await res.json();
+            if(data.success) {
+                document.getElementById('status').innerText = 'OTP Sent! Please enter the pairing notification code on your phone.';
+                document.getElementById('dashboard').style.display = 'block';
+            } else {
+                document.getElementById('status').innerText = 'Error: ' + data.error;
+            }
+        }
+    </script>
+</body>
+</html>
